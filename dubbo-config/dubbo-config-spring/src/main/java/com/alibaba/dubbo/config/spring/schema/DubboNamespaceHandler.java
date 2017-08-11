@@ -31,18 +31,22 @@ import com.alibaba.dubbo.config.spring.ServiceBean;
 
 /**
  * DubboNamespaceHandler
- * 
+ * 通过META-INF/spring.handlers注册当前handler
+ * @see org.springframework.beans.factory.xml.BeanDefinitionParserDelegate#parseCustomElement
+ * 方法当解析到自定义schema 会根据schema找到对应的handler
+ * handler根据标签名称找到对应的parser
+ *
  * @author william.liangf
  * @export
  */
 public class DubboNamespaceHandler extends NamespaceHandlerSupport {
 
-	static {
-		Version.checkDuplicate(DubboNamespaceHandler.class);
-	}
+    static {
+        Version.checkDuplicate(DubboNamespaceHandler.class);
+    }
 
-	public void init() {
-	    registerBeanDefinitionParser("application", new DubboBeanDefinitionParser(ApplicationConfig.class, true));
+    public void init() {
+        registerBeanDefinitionParser("application", new DubboBeanDefinitionParser(ApplicationConfig.class, true));
         registerBeanDefinitionParser("module", new DubboBeanDefinitionParser(ModuleConfig.class, true));
         registerBeanDefinitionParser("registry", new DubboBeanDefinitionParser(RegistryConfig.class, true));
         registerBeanDefinitionParser("monitor", new DubboBeanDefinitionParser(MonitorConfig.class, true));

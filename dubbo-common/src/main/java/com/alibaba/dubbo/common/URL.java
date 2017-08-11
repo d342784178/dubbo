@@ -903,7 +903,7 @@ public final class URL implements Serializable {
         return addParameter(key, String.valueOf(value));
     }
     
-    public URL addParameter(String key, String value) {
+    public URL  addParameter(String key, String value) {
         if (key == null || key.length() == 0
                 || value == null || value.length() == 0) {
             return this;

@@ -134,6 +134,10 @@ public abstract class AbstractConfig implements Serializable {
         }
     }
 
+    /**
+     * 根据对象属性 初始化对象
+     * @param config
+     */
     protected static void appendProperties(AbstractConfig config) {
         if (config == null) {
             return;
@@ -212,7 +216,12 @@ public abstract class AbstractConfig implements Serializable {
         tag = tag.toLowerCase();
         return tag;
     }
-    
+
+    /**
+     * 将对象的getter属性 塞到map里
+     * @param parameters
+     * @param config
+     */
     protected static void appendParameters(Map<String, String> parameters, Object config) {
         appendParameters(parameters, config, null);
     }

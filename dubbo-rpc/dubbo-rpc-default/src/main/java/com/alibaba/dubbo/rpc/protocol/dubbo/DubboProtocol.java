@@ -254,7 +254,11 @@ public class DubboProtocol extends AbstractProtocol {
         
         return exporter;
     }
-    
+
+    /**
+     * 开启服务
+     * @param url
+     */
     private void openServer(URL url) {
         // find server.
         String key = url.getAddress();
@@ -270,7 +274,12 @@ public class DubboProtocol extends AbstractProtocol {
         	}
         }
     }
-    
+
+    /**
+     * 创建服务
+     * @param url
+     * @return
+     */
     private ExchangeServer createServer(URL url) {
         //默认开启server关闭时发送readonly事件
         url = url.addParameterIfAbsent(Constants.CHANNEL_READONLYEVENT_SENT_KEY, Boolean.TRUE.toString());
@@ -283,7 +292,7 @@ public class DubboProtocol extends AbstractProtocol {
 
         url = url.addParameter(Constants.CODEC_KEY, Version.isCompatibleVersion() ? COMPATIBLE_CODEC_NAME : DubboCodec.NAME);
         ExchangeServer server;
-        try {
+        try {//启动服务(netty监听端口)
             server = Exchangers.bind(url, requestHandler);
         } catch (RemotingException e) {
             throw new RpcException("Fail to start server(url: " + url + ") " + e.getMessage(), e);
@@ -291,7 +300,7 @@ public class DubboProtocol extends AbstractProtocol {
         str = url.getParameter(Constants.CLIENT_KEY);
         if (str != null && str.length() > 0) {
             Set<String> supportedTypes = ExtensionLoader.getExtensionLoader(Transporter.class).getSupportedExtensions();
-            if (!supportedTypes.contains(str)) {
+            if (!supportedTypes.contains(str)) {//判断是否支持该客户端通讯框架
                 throw new RpcException("Unsupported client type: " + str);
             }
         }

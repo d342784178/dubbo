@@ -45,7 +45,12 @@ public abstract class AbstractProtocol implements Protocol {
 
 	//TODO SOFEREFENCE
     protected final Set<Invoker<?>> invokers = new ConcurrentHashSet<Invoker<?>>();
-    
+
+    /**
+     * 为服务生成唯一key
+     * @param url
+     * @return
+     */
 	protected static String serviceKey(URL url) {
 	    return ProtocolUtils.serviceKey(url);
 	}

@@ -238,7 +238,7 @@ public class RegistryProtocol implements Protocol {
 	public <T> Invoker<T> refer(Class<T> type, URL url) throws RpcException {
         url = url.setProtocol(url.getParameter(Constants.REGISTRY_KEY, Constants.DEFAULT_REGISTRY)).removeParameter(Constants.REGISTRY_KEY);
         Registry registry = registryFactory.getRegistry(url);
-        if (RegistryService.class.equals(type)) {
+        if (RegistryService.class.equals(type)) {//监控中心
         	return proxyFactory.getInvoker((T) registry, type, url);
         }
 
@@ -264,10 +264,11 @@ public class RegistryProtocol implements Protocol {
         directory.setProtocol(protocol);
         URL subscribeUrl = new URL(Constants.CONSUMER_PROTOCOL, NetUtils.getLocalHost(), 0, type.getName(), directory.getUrl().getParameters());
         if (! Constants.ANY_VALUE.equals(url.getServiceInterface())
-                && url.getParameter(Constants.REGISTER_KEY, true)) {
+                && url.getParameter(Constants.REGISTER_KEY, true)) {//在注册中心注册
             registry.register(subscribeUrl.addParameters(Constants.CATEGORY_KEY, Constants.CONSUMERS_CATEGORY,
                     Constants.CHECK_KEY, String.valueOf(false)));
         }
+        //订阅
         directory.subscribe(subscribeUrl.addParameter(Constants.CATEGORY_KEY, 
                 Constants.PROVIDERS_CATEGORY 
                 + "," + Constants.CONFIGURATORS_CATEGORY 

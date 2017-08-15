@@ -76,7 +76,7 @@ public class ReferenceBean<T> extends ReferenceConfig<T> implements FactoryBean,
 
     @SuppressWarnings({ "unchecked"})
     public void afterPropertiesSet() throws Exception {
-        if (getConsumer() == null) {
+        if (getConsumer() == null) {//消费者全局配置
             Map<String, ConsumerConfig> consumerConfigMap = applicationContext == null ? null  : BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, ConsumerConfig.class, false, false);
             if (consumerConfigMap != null && consumerConfigMap.size() > 0) {
                 ConsumerConfig consumerConfig = null;

@@ -205,7 +205,12 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         }
         return registryList;
     }
-    
+
+    /**
+     * 获取监控中心地址
+     * @param registryURL
+     * @return
+     */
     protected URL loadMonitor(URL registryURL) {
         if (monitor == null) {
             String monitorAddress = ConfigUtils.getProperty("dubbo.monitor.address");
@@ -245,7 +250,12 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         }
         return null;
     }
-    
+
+    /**
+     * 检测接口有效性
+     * @param interfaceClass
+     * @param methods
+     */
     protected void checkInterfaceAndMethods(Class<?> interfaceClass, List<MethodConfig> methods) {
         // 接口不能为空
         if (interfaceClass == null) {

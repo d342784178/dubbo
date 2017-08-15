@@ -292,7 +292,12 @@ public abstract class AbstractConfig implements Serializable {
             }
         }
     }
-    
+
+    /**
+     * 获取对象getter属性 塞到map中
+     * @param parameters
+     * @param config
+     */
     protected static void appendAttributes(Map<Object, Object> parameters, Object config) {
         appendAttributes(parameters, config, null);
     }

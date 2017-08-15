@@ -157,6 +157,9 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
         ref = null;
     }
 
+    /**
+     * 初始化消费者
+     */
     private void init() {
 	    if (initialized) {
 	        return;
@@ -171,7 +174,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
         if (getGeneric() == null && getConsumer() != null) {
             setGeneric(getConsumer().getGeneric());
         }
-        if (ProtocolUtils.isGeneric(getGeneric())) {
+        if (ProtocolUtils.isGeneric(getGeneric())) {//是否泛化
             interfaceClass = GenericService.class;
         } else {
             try {
@@ -184,6 +187,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
         }
         String resolve = System.getProperty(interfaceName);
         String resolveFile = null;
+        //使用缓存的服务端地址
         if (resolve == null || resolve.length() == 0) {
 	        resolveFile = System.getProperty("dubbo.resolve.file");
 	        if (resolveFile == null || resolveFile.length() == 0) {
@@ -299,7 +303,13 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
         StaticContext.getSystemContext().putAll(attributes);
         ref = createProxy(map);
     }
-    
+
+    /**
+     *
+     * @param method
+     * @param map
+     * @param attributes
+     */
     private static void checkAndConvertImplicitConfig(MethodConfig method, Map<String,String> map, Map<Object,Object> attributes){
       //check config conflict
         if (Boolean.FALSE.equals(method.isReturn()) && (method.getOnreturn() != null || method.getOnthrow() != null)) {
@@ -332,7 +342,12 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
             throw new IllegalStateException(e);
         }
     }
-    
+
+    /**
+     * 创建接口代理
+     * @param map
+     * @return
+     */
 	@SuppressWarnings({ "unchecked", "rawtypes", "deprecation" })
 	private T createProxy(Map<String, String> map) {
 		URL tmpUrl = new URL("temp", "localhost", 0, map);
@@ -373,7 +388,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
                     }
                 }
             } else { // 通过注册中心配置拼装URL
-            	List<URL> us = loadRegistries(false);
+            	List<URL> us = loadRegistries(false);//用户指定了url为注册中心url
             	if (us != null && us.size() > 0) {
                 	for (URL u : us) {
                 	    URL monitorUrl = loadMonitor(u);
@@ -387,7 +402,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
                     throw new IllegalStateException("No such any registry to reference " + interfaceName  + " on the consumer " + NetUtils.getLocalHost() + " use dubbo version " + Version.getVersion() + ", please config <dubbo:registry address=\"...\" /> to your spring config.");
                 }
             }
-
+            //指定了服务的地址
             if (urls.size() == 1) {
                 invoker = refprotocol.refer(interfaceClass, urls.get(0));
             } else {

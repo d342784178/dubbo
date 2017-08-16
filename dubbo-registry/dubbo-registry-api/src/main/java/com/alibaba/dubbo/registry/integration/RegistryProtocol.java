@@ -104,13 +104,15 @@ public class RegistryProtocol implements Protocol {
     
     public <T> Exporter<T> export(final Invoker<T> originInvoker) throws RpcException {
         //获取真实服务url的exporter
+        //内部存放了真实服务的invoker
         final ExporterChangeableWrapper<T> exporter = doLocalExport(originInvoker);
         //registry provider
         final Registry registry = getRegistry(originInvoker);
         final URL registedProviderUrl = getRegistedProviderUrl(originInvoker);
         registry.register(registedProviderUrl);
-        // 订阅override数据
+        // 订阅消费者信息
         // FIXME 提供者订阅时，会影响同一JVM即暴露服务，又引用同一服务的的场景，因为subscribed以服务名为缓存的key，导致订阅信息覆盖。
+        //返回provider://#{ip:port}/#{path}?interface=*&category=configurators
         final URL overrideSubscribeUrl = getSubscribedOverrideUrl(registedProviderUrl);
         final OverrideListener overrideSubscribeListener = new OverrideListener(overrideSubscribeUrl);
         overrideListeners.put(overrideSubscribeUrl, overrideSubscribeListener);
@@ -184,6 +186,7 @@ public class RegistryProtocol implements Protocol {
     private Registry getRegistry(final Invoker<?> originInvoker){
         URL registryUrl = originInvoker.getUrl();
         if (Constants.REGISTRY_PROTOCOL.equals(registryUrl.getProtocol())) {
+            //默认dubbo注册中心
             String protocol = registryUrl.getParameter(Constants.REGISTRY_KEY, Constants.DEFAULT_DIRECTORY);
             registryUrl = registryUrl.setProtocol(protocol).removeParameter(Constants.REGISTRY_KEY);
         }
@@ -191,17 +194,18 @@ public class RegistryProtocol implements Protocol {
     }
 
     /**
-     * 返回注册到注册中心的URL，对URL参数进行一次过滤
+     * 返回注册到注册中的服务Url
      * @param originInvoker
      * @return
      */
     private URL getRegistedProviderUrl(final Invoker<?> originInvoker){
         URL providerUrl = getProviderUrl(originInvoker);
-        //注册中心看到的地址
+        //过滤.开头以及MONITOR_KEY参数
         final URL registedProviderUrl = providerUrl.removeParameters(getFilteredKeys(providerUrl)).removeParameter(Constants.MONITOR_KEY);
         return registedProviderUrl;
     }
-    
+
+
     private URL getSubscribedOverrideUrl(URL registedProviderUrl){
     	return registedProviderUrl.setProtocol(Constants.PROVIDER_PROTOCOL)
                 .addParameters(Constants.CATEGORY_KEY, Constants.CONFIGURATORS_CATEGORY, 
@@ -209,7 +213,7 @@ public class RegistryProtocol implements Protocol {
     }
 
     /**
-     * 通过invoker的url 获取 providerUrl的地址
+     * 通过RegistryInvoker的url 获取providerUrl的地址
      * @param origininvoker
      * @return
      */
@@ -238,7 +242,7 @@ public class RegistryProtocol implements Protocol {
 	public <T> Invoker<T> refer(Class<T> type, URL url) throws RpcException {
         url = url.setProtocol(url.getParameter(Constants.REGISTRY_KEY, Constants.DEFAULT_REGISTRY)).removeParameter(Constants.REGISTRY_KEY);
         Registry registry = registryFactory.getRegistry(url);
-        if (RegistryService.class.equals(type)) {//监控中心
+        if (RegistryService.class.equals(type)) {//注册中心
         	return proxyFactory.getInvoker((T) registry, type, url);
         }
 
@@ -330,6 +334,7 @@ public class RegistryProtocol implements Protocol {
         			// 兼容旧版本
         			overrideUrl = url.addParameter(Constants.CATEGORY_KEY, Constants.CONFIGURATORS_CATEGORY);
         		}
+                //如果不匹配 则移除
         		if (! UrlUtils.isMatch(subscribeUrl, overrideUrl)) {
         			if (result == null) {
         				result = new ArrayList<URL>(urls);
@@ -338,9 +343,11 @@ public class RegistryProtocol implements Protocol {
         			logger.warn("Subsribe category=configurator, but notifed non-configurator urls. may be registry bug. unexcepted url: " + url);
         		}
         	}
+        	//剩下的都是匹配的
         	if (result != null) {
         		urls = result;
         	}
+        	//新的消费者
         	this.configurators = RegistryDirectory.toConfigurators(urls);
             List<ExporterChangeableWrapper<?>> exporters = new ArrayList<ExporterChangeableWrapper<?>>(bounds.values());
             for (ExporterChangeableWrapper<?> exporter : exporters){

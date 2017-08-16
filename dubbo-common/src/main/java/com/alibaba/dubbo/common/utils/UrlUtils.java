@@ -352,6 +352,13 @@ public class UrlUtils {
         }
     }
 
+    /**
+     * url是否匹配
+     * INTERFACE_KEY CATEGORY_KEY GROUP_KEY VERSION_KEY CLASSIFIER_KEY都相同
+     * @param consumerUrl
+     * @param providerUrl
+     * @return
+     */
     public static boolean isMatch(URL consumerUrl, URL providerUrl) {
         String consumerInterface = consumerUrl.getServiceInterface();
         String providerInterface = providerUrl.getServiceInterface();

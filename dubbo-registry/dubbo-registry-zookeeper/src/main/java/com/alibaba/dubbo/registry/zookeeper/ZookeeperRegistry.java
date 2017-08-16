@@ -111,7 +111,7 @@ public class ZookeeperRegistry extends FailbackRegistry {
 
     protected void doSubscribe(final URL url, final NotifyListener listener) {
         try {
-            if (Constants.ANY_VALUE.equals(url.getServiceInterface())) {
+            if (Constants.ANY_VALUE.equals(url.getServiceInterface())) {//订阅所有service节点情况
                 String root = toRootPath();
                 ConcurrentMap<NotifyListener, ChildListener> listeners = zkListeners.get(url);
                 if (listeners == null) {
@@ -138,13 +138,13 @@ public class ZookeeperRegistry extends FailbackRegistry {
                 List<String> services = zkClient.addChildListener(root, zkListener);
                 if (services != null && services.size() > 0) {
                     for (String service : services) {
-						service = URL.decode(service);
+						service = URL.decode(service);//decode 因为register的时候进行了encode
 						anyServices.add(service);
                         subscribe(url.setPath(service).addParameters(Constants.INTERFACE_KEY, service, 
                                 Constants.CHECK_KEY, String.valueOf(false)), listener);
                     }
                 }
-            } else {
+            } else {//订阅某个service节点
                 List<URL> urls = new ArrayList<URL>();
                 for (String path : toCategoriesPath(url)) {
                     ConcurrentMap<NotifyListener, ChildListener> listeners = zkListeners.get(url);
@@ -167,6 +167,7 @@ public class ZookeeperRegistry extends FailbackRegistry {
                     	urls.addAll(toUrlsWithEmpty(url, path, children));
                     }
                 }
+                //订阅成功notify一下
                 notify(url, listener, urls);
             }
         } catch (Throwable e) {
@@ -240,10 +241,21 @@ public class ZookeeperRegistry extends FailbackRegistry {
         return toServicePath(url) + Constants.PATH_SEPARATOR + url.getParameter(Constants.CATEGORY_KEY, Constants.DEFAULT_CATEGORY);
     }
 
+    /**
+     * 返回#{root}/#{serviceName}/#{category}/URL.encode(url.toFullString())
+     * @param url
+     * @return
+     */
     private String toUrlPath(URL url) {
         return toCategoryPath(url) + Constants.PATH_SEPARATOR + URL.encode(url.toFullString());
     }
-    
+
+    /**
+     * 返回匹配的ProviderUrls
+     * @param consumer
+     * @param providers
+     * @return
+     */
     private List<URL> toUrlsWithoutEmpty(URL consumer, List<String> providers) {
     	List<URL> urls = new ArrayList<URL>();
         if (providers != null && providers.size() > 0) {
@@ -260,6 +272,15 @@ public class ZookeeperRegistry extends FailbackRegistry {
         return urls;
     }
 
+    /**
+     * 返回与consumer匹配的Provider 以及empty://host/path?category=#{path.category}
+     * 否则返回空
+     * @see UrlUtils#isMatch(com.alibaba.dubbo.common.URL, com.alibaba.dubbo.common.URL)
+     * @param consumer
+     * @param path
+     * @param providers
+     * @return
+     */
     private List<URL> toUrlsWithEmpty(URL consumer, String path, List<String> providers) {
         List<URL> urls = toUrlsWithoutEmpty(consumer, providers);
         if (urls == null || urls.isEmpty()) {

@@ -67,7 +67,7 @@ public class ZookeeperRegistry extends FailbackRegistry {
         }
         this.root = group;
         zkClient = zookeeperTransporter.connect(url);
-        zkClient.addStateListener(new StateListener() {
+        zkClient.addStateListener(new StateListener() {//添加一个watch，当连接建立后，会执行 recover方法
             public void stateChanged(int state) {
             	if (state == RECONNECTED) {
 	            	try {

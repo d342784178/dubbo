@@ -31,6 +31,8 @@ import com.alibaba.dubbo.registry.RegistryService;
 
 /**
  * AbstractRegistryFactory. (SPI, Singleton, ThreadSafe)
+ * 提供线程安全的连接注册中心
+ * 由于redis不需要初始化连接 所以不用继承该类
  * 
  * @see com.alibaba.dubbo.registry.RegistryFactory
  * @author william.liangf

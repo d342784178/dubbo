@@ -25,11 +25,15 @@ import com.alibaba.dubbo.rpc.cluster.Router;
 
 /**
  * StaticDirectory
- * 
+ *
+ * 所有注册中心下的某个服务集群目录
+ * 有一个ClusterInvoker的集合 每个Clusterinvoker中又有一个RegistryDirectory
+ * @see StaticDirectory#invokers
  * @author william.liangf
  */
 public class StaticDirectory<T> extends AbstractDirectory<T> {
-    
+
+    //clusterInvokers
     private final List<Invoker<T>> invokers;
     
     public StaticDirectory(List<Invoker<T>> invokers){

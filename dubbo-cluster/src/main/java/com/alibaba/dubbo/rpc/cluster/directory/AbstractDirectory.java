@@ -66,12 +66,6 @@ public abstract class AbstractDirectory<T> implements Directory<T> {
         setRouters(routers);
     }
 
-    /**
-     * 根据invocation信息获取invoker
-     * @param invocation
-     * @return
-     * @throws RpcException
-     */
     public List<Invoker<T>> list(Invocation invocation) throws RpcException {
         if (destroyed){
             throw new RpcException("Directory already destroyed .url: "+ getUrl());

@@ -54,7 +54,7 @@ import com.alibaba.dubbo.rpc.support.RpcUtils;
 
 /**
  * RegistryDirectory
- * 服务集群
+ * 某个注册中心下的某个服务集群目录
  *
  * @author william.liangf
  * @author chao.liuc

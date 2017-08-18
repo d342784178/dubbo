@@ -20,10 +20,10 @@ import com.alibaba.dubbo.common.Node;
 /**
  * Invoker. (API/SPI, Prototype, ThreadSafe)
  * 负责ServiceIntf的具体实现
- * 分两种:
- * 1.AbstractInvoker 通过网络调用远程服务 (客户端用)
+ * 分三种:
+ * 1.AbstractInvoker      通过网络调用远程服务 (客户端用)
  * 2.AbstractProxyInvoker 调用本地实现 (服务端用)
- * 
+ * 3.ClusterInvoker       提供集群服务 (客户端用)
  * @see com.alibaba.dubbo.rpc.Protocol#refer(Class, com.alibaba.dubbo.common.URL)
  * @see com.alibaba.dubbo.rpc.InvokerListener
  * @see com.alibaba.dubbo.rpc.protocol.AbstractInvoker

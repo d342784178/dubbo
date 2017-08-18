@@ -24,26 +24,27 @@ import com.alibaba.dubbo.rpc.RpcException;
 
 /**
  * Directory. (SPI, Prototype, ThreadSafe)
- * 
+ * 服务集群目录
+ * 某个注册中心下的某个服务集群目录
  * <a href="http://en.wikipedia.org/wiki/Directory_service">Directory Service</a>
- * 
- * @see com.alibaba.dubbo.rpc.cluster.Cluster#join(Directory)
+ *
  * @author william.liangf
+ * @see com.alibaba.dubbo.rpc.cluster.Cluster#join(Directory)
  */
 public interface Directory<T> extends Node {
-    
+
     /**
      * get service type.
-     * 
+     *
      * @return service type.
      */
     Class<T> getInterface();
 
     /**
      * list invokers.
-     * 
+     *
      * @return invokers
      */
     List<Invoker<T>> list(Invocation invocation) throws RpcException;
-    
+
 }

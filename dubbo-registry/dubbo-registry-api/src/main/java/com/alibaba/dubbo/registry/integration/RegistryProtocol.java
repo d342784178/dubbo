@@ -268,7 +268,7 @@ public class RegistryProtocol implements Protocol {
         directory.setProtocol(protocol);
         URL subscribeUrl = new URL(Constants.CONSUMER_PROTOCOL, NetUtils.getLocalHost(), 0, type.getName(), directory.getUrl().getParameters());
         if (! Constants.ANY_VALUE.equals(url.getServiceInterface())
-                && url.getParameter(Constants.REGISTER_KEY, true)) {//在注册中心注册
+                && url.getParameter(Constants.REGISTER_KEY, true)) {//url中没有包含注册中心信息 则在注册中心注册
             registry.register(subscribeUrl.addParameters(Constants.CATEGORY_KEY, Constants.CONSUMERS_CATEGORY,
                     Constants.CHECK_KEY, String.valueOf(false)));
         }

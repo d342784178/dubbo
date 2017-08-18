@@ -162,12 +162,13 @@ public class ZookeeperRegistry extends FailbackRegistry {
                         zkListener = listeners.get(listener);
                     }
                     zkClient.create(path, false);
+                    //返回category下所有节点路径
                     List<String> children = zkClient.addChildListener(path, zkListener);
                     if (children != null) {
                     	urls.addAll(toUrlsWithEmpty(url, path, children));
                     }
                 }
-                //订阅成功notify一下
+                // 这里的listener也就是RegistryDirectory
                 notify(url, listener, urls);
             }
         } catch (Throwable e) {
@@ -222,6 +223,11 @@ public class ZookeeperRegistry extends FailbackRegistry {
         return toRootDir() + URL.encode(name);
     }
 
+    /**
+     * 返回服务中心中某个service下所有category路径
+     * @param url
+     * @return
+     */
     private String[] toCategoriesPath(URL url) {
         String[] categroies;
         if (Constants.ANY_VALUE.equals(url.getParameter(Constants.CATEGORY_KEY))) {

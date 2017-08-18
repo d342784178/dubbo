@@ -72,7 +72,7 @@ public abstract class AbstractDirectory<T> implements Directory<T> {
         }
         List<Invoker<T>> invokers = doList(invocation);
         List<Router> localRouters = this.routers; // local reference
-        if (localRouters != null && localRouters.size() > 0) {
+        if (localRouters != null && localRouters.size() > 0) {//根据routers进行路由(服务级别的 不支持方法级别)
             for (Router router: localRouters){
                 try {
                     if (router.getUrl() == null || router.getUrl().getParameter(Constants.RUNTIME_KEY, true)) {

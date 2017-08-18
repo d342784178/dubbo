@@ -30,7 +30,7 @@ public interface ProxyFactory {
 
     /**
      * create proxy.
-     * 
+     * 生成stub的代理实现 内部调用invoker来实现具体调用
      * @param invoker
      * @return proxy
      */
@@ -39,7 +39,7 @@ public interface ProxyFactory {
 
     /**
      * create invoker.
-     * 
+     * 返回AbstractProxyInvoker
      * @param <T>
      * @param proxy
      * @param type

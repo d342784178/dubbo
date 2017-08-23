@@ -23,7 +23,7 @@ import com.alibaba.dubbo.remoting.transport.ChannelHandlerDispatcher;
 
 /**
  * Transporter facade. (API, Static, ThreadSafe)
- * 
+ * 网络传输 门面类
  * @author william.liangf
  */
 public class Transporters {

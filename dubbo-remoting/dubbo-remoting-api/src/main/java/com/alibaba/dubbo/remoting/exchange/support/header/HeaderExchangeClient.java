@@ -38,6 +38,9 @@ import com.alibaba.dubbo.remoting.exchange.ResponseFuture;
 
 /**
  * DefaultMessageClient
+ * 信息交换客户端
+ * 封装请求 同步转异步(实际调用ExchangeChannel来实现)
+ * 在请求功能的基础上增加 心跳机制
  *
  * @author william.liangf
  * @author chao.liuc

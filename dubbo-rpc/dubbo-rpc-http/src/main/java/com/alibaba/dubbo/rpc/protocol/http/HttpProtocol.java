@@ -91,6 +91,7 @@ public class HttpProtocol extends AbstractProxyProtocol {
         String addr = url.getIp() + ":" + url.getPort();
         HttpServer server = serverMap.get(addr);
         if (server == null) {
+            //绑定urlPath(使用servlet 或者jetty 可以拓展使用内置tomcat)
             server = httpBinder.bind(url, new InternalHandler());
             serverMap.put(addr, server);
         }

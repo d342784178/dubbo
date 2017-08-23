@@ -33,20 +33,23 @@ import com.alibaba.dubbo.remoting.exchange.support.DefaultFuture;
 
 /**
  * ExchangeReceiver
- * 
+ * 信息交换通道
+ * 调用底层具体通信框架实现通信
+ * 封装请求 同步转异步
+ *
  * @author william.liangf
  */
 final class HeaderExchangeChannel implements ExchangeChannel {
 
-    private static final Logger logger      = LoggerFactory.getLogger(HeaderExchangeChannel.class);
+    private static final Logger logger = LoggerFactory.getLogger(HeaderExchangeChannel.class);
 
     private static final String CHANNEL_KEY = HeaderExchangeChannel.class.getName() + ".CHANNEL";
 
-    private final Channel       channel;
+    private final Channel channel;
 
-    private volatile boolean    closed      = false;
+    private volatile boolean closed = false;
 
-    HeaderExchangeChannel(Channel channel){
+    HeaderExchangeChannel(Channel channel) {
         if (channel == null) {
             throw new IllegalArgumentException("channel == null");
         }
@@ -66,20 +69,21 @@ final class HeaderExchangeChannel implements ExchangeChannel {
         }
         return ret;
     }
-    
+
     static void removeChannelIfDisconnected(Channel ch) {
-        if (ch != null && ! ch.isConnected()) {
+        if (ch != null && !ch.isConnected()) {
             ch.removeAttribute(CHANNEL_KEY);
         }
     }
-    
+
     public void send(Object message) throws RemotingException {
         send(message, getUrl().getParameter(Constants.SENT_KEY, false));
     }
-    
+
     public void send(Object message, boolean sent) throws RemotingException {
         if (closed) {
-            throw new RemotingException(this.getLocalAddress(), null, "Failed to send message " + message + ", cause: The channel " + this + " is closed!");
+            throw new RemotingException(this.getLocalAddress(), null, "Failed to send message " + message + ", cause:" +
+                    " The channel " + this + " is closed!");
         }
         if (message instanceof Request
                 || message instanceof Response
@@ -95,12 +99,14 @@ final class HeaderExchangeChannel implements ExchangeChannel {
     }
 
     public ResponseFuture request(Object request) throws RemotingException {
-        return request(request, channel.getUrl().getPositiveParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT));
+        return request(request, channel.getUrl().getPositiveParameter(Constants.TIMEOUT_KEY, Constants
+                .DEFAULT_TIMEOUT));
     }
 
     public ResponseFuture request(Object request, int timeout) throws RemotingException {
         if (closed) {
-            throw new RemotingException(this.getLocalAddress(), null, "Failed to send request " + request + ", cause: The channel " + this + " is closed!");
+            throw new RemotingException(this.getLocalAddress(), null, "Failed to send request " + request + ", cause:" +
+                    " The channel " + this + " is closed!");
         }
         // create request.
         Request req = new Request();
@@ -108,9 +114,9 @@ final class HeaderExchangeChannel implements ExchangeChannel {
         req.setTwoWay(true);
         req.setData(request);
         DefaultFuture future = new DefaultFuture(channel, req, timeout);
-        try{
+        try {
             channel.send(req);
-        }catch (RemotingException e) {
+        } catch (RemotingException e) {
             future.cancel();
             throw e;
         }
@@ -137,7 +143,7 @@ final class HeaderExchangeChannel implements ExchangeChannel {
         closed = true;
         if (timeout > 0) {
             long start = System.currentTimeMillis();
-            while (DefaultFuture.hasFuture(HeaderExchangeChannel.this) 
+            while (DefaultFuture.hasFuture(HeaderExchangeChannel.this)
                     && System.currentTimeMillis() - start < timeout) {
                 try {
                     Thread.sleep(10);
@@ -172,7 +178,7 @@ final class HeaderExchangeChannel implements ExchangeChannel {
     public ExchangeHandler getExchangeHandler() {
         return (ExchangeHandler) channel.getChannelHandler();
     }
-    
+
     public Object getAttribute(String key) {
         return channel.getAttribute(key);
     }
@@ -199,13 +205,23 @@ final class HeaderExchangeChannel implements ExchangeChannel {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
         HeaderExchangeChannel other = (HeaderExchangeChannel) obj;
         if (channel == null) {
-            if (other.channel != null) return false;
-        } else if (!channel.equals(other.channel)) return false;
+            if (other.channel != null) {
+                return false;
+            }
+        } else if (!channel.equals(other.channel)) {
+            return false;
+        }
         return true;
     }
 

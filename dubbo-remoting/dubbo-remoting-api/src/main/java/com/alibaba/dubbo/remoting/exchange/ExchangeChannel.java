@@ -20,6 +20,8 @@ import com.alibaba.dubbo.remoting.RemotingException;
 
 /**
  * ExchangeChannel. (API/SPI, Prototype, ThreadSafe)
+ * 封装请求响应模式
+ * send request oneway
  * 
  * @author william.liangf
  */

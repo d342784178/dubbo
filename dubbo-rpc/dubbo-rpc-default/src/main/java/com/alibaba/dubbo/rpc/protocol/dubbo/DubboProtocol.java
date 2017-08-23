@@ -313,7 +313,12 @@ public class DubboProtocol extends AbstractProtocol {
         invokers.add(invoker);
         return invoker;
     }
-    
+
+    /**
+     * 获取通信客户端
+     * @param url
+     * @return
+     */
     private ExchangeClient[] getClients(URL url){
         //是否共享连接
         boolean service_share_connect = false;

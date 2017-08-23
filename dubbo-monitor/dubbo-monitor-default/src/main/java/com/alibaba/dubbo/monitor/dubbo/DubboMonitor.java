@@ -135,7 +135,11 @@ public class DubboMonitor implements Monitor {
             } while (! reference.compareAndSet(current, update));
         }
     }
-    
+
+    /**
+     * 添加到定时扫描器中
+     * @param url
+     */
     public void collect(URL url) {
         // 读写统计变量
         int success = url.getParameter(MonitorService.SUCCESS, 0);
@@ -147,7 +151,7 @@ public class DubboMonitor implements Monitor {
         // 初始化原子引用
         Statistics statistics = new Statistics(url);
         AtomicReference<long[]> reference = statisticsMap.get(statistics);
-        if (reference == null) {
+        if (reference == null) {//监控器会定时扫描statisticsMap
             statisticsMap.putIfAbsent(statistics, new AtomicReference<long[]>());
             reference = statisticsMap.get(statistics);
         }

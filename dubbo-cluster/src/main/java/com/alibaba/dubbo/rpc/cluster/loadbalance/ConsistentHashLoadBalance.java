@@ -31,6 +31,7 @@ import com.alibaba.dubbo.rpc.Invoker;
 
 /**
  * ConsistentHashLoadBalance
+ * 一致性hash路由
  * 
  * @author william.liangf
  */

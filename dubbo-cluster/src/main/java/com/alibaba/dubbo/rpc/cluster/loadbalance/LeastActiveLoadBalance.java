@@ -26,7 +26,7 @@ import com.alibaba.dubbo.rpc.RpcStatus;
 
 /**
  * LeastActiveLoadBalance
- * 最少活跃
+ * 最少活跃调用数
  *
  * @author william.liangf
  */

@@ -31,7 +31,7 @@ import com.alibaba.dubbo.rpc.Invoker;
 
 /**
  * ConsistentHashLoadBalance
- * 一致性hash路由
+ * ketama一致性hash
  * 
  * @author william.liangf
  */
@@ -45,7 +45,7 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
         String key = invokers.get(0).getUrl().getServiceKey() + "." + invocation.getMethodName();
         int identityHashCode = System.identityHashCode(invokers);
         ConsistentHashSelector<T> selector = (ConsistentHashSelector<T>) selectors.get(key);
-        if (selector == null || selector.getIdentityHashCode() != identityHashCode) {
+        if (selector == null || selector.getIdentityHashCode() != identityHashCode) {//当invoker数量变化或尚未生成hash环时
             selectors.put(key, new ConsistentHashSelector<T>(invokers, invocation.getMethodName(), identityHashCode));
             selector = (ConsistentHashSelector<T>) selectors.get(key);
         }
@@ -54,11 +54,11 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
 
     private static final class ConsistentHashSelector<T> {
 
-        private final TreeMap<Long, Invoker<T>> virtualInvokers;
+        private final TreeMap<Long, Invoker<T>> virtualInvokers;//虚拟节点集合,根据key排序 均匀分布
 
-        private final int                       replicaNumber;
+        private final int                       replicaNumber;//每个服务的虚拟节点数量
         
-        private final int                       identityHashCode;
+        private final int                       identityHashCode;//对象的hash码
         
         private final int[]                     argumentIndex;
 
@@ -88,7 +88,9 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
         }
 
         public Invoker<T> select(Invocation invocation) {
+            //取出参数
             String key = toKey(invocation.getArguments());
+            //对参数md5
             byte[] digest = md5(key);
             Invoker<T> invoker = sekectForKey(hash(digest, 0));
             return invoker;
@@ -108,6 +110,7 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
             Invoker<T> invoker;
             Long key = hash;
             if (!virtualInvokers.containsKey(key)) {
+                //返回map中key大于当前key的部分 然后从中取出第一个key
                 SortedMap<Long, Invoker<T>> tailMap = virtualInvokers.tailMap(key);
                 if (tailMap.isEmpty()) {
                     key = virtualInvokers.firstKey();

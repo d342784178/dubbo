@@ -26,7 +26,7 @@ import com.alibaba.dubbo.rpc.RpcResult;
 
 /**
  * EchoInvokerFilter
- * 
+ * 回声测试拦截器
  * @author william.liangf
  */
 @Activate(group = Constants.PROVIDER, order = -110000)

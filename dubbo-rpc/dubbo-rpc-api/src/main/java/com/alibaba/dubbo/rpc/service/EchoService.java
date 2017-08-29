@@ -17,6 +17,7 @@ package com.alibaba.dubbo.rpc.service;
 
 /**
  * Echo service.
+ * 回声测试用
  * 
  * @author qian.lei
  * @export

@@ -26,6 +26,7 @@ import com.alibaba.dubbo.remoting.ChannelHandler;
 
 /**
  * ChannelListenerDispatcher
+ * 消息分发器
  * 
  * @author william.liangf
  */

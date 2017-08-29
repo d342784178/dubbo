@@ -42,7 +42,7 @@ public class NettyHandler extends SimpleChannelHandler {
     private final Map<String, Channel> channels = new ConcurrentHashMap<String, Channel>(); // <ip:port, channel>
     
     private final URL url;
-    
+    //见com.alibaba.dubbo.remoting.transport.MultiMessageHandler
     private final ChannelHandler handler;
     
     public NettyHandler(URL url, ChannelHandler handler){

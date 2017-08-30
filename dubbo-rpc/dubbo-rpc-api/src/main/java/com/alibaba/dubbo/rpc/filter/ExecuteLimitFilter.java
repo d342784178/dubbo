@@ -27,8 +27,11 @@ import com.alibaba.dubbo.rpc.RpcStatus;
 
 /**
  * ThreadLimitInvokerFilter
- * 
+ * 并发拦截器--占用线程池线程数
+ * 超出线程数会失败
+ *
  * @author william.liangf
+ * @link http://dubbo.io/user-guide/demos/%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6.html
  */
 @Activate(group = Constants.PROVIDER, value = Constants.EXECUTES_KEY)
 public class ExecuteLimitFilter implements Filter {
@@ -40,7 +43,9 @@ public class ExecuteLimitFilter implements Filter {
         if (max > 0) {
             RpcStatus count = RpcStatus.getStatus(url, invocation.getMethodName());
             if (count.getActive() >= max) {
-                throw new RpcException("Failed to invoke method " + invocation.getMethodName() + " in provider " + url + ", cause: The service using threads greater than <dubbo:service executes=\"" + max + "\" /> limited.");
+                throw new RpcException("Failed to invoke method " + invocation.getMethodName() + " in provider " +
+                        url + ", cause: The service using threads greater than <dubbo:service executes=\"" + max +
+                        "\" /> limited.");
             }
         }
         long begin = System.currentTimeMillis();
@@ -51,14 +56,12 @@ public class ExecuteLimitFilter implements Filter {
             return result;
         } catch (Throwable t) {
             isException = true;
-            if(t instanceof RuntimeException) {
+            if (t instanceof RuntimeException) {
                 throw (RuntimeException) t;
-            }
-            else {
+            } else {
                 throw new RpcException("unexpected exception when ExecuteLimitFilter", t);
             }
-        }
-        finally {
+        } finally {
             RpcStatus.endCount(url, methodName, System.currentTimeMillis() - begin, isException);
         }
     }

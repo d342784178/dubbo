@@ -35,7 +35,7 @@ import com.alibaba.dubbo.remoting.exchange.ResponseFuture;
 
 /**
  * dubbo protocol support class.
- * 
+ * 懒汉式
  * @author chao.liuc
  */
 @SuppressWarnings("deprecation")

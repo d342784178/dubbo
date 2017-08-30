@@ -27,15 +27,19 @@ import com.alibaba.dubbo.rpc.RpcResult;
 /**
  * EchoInvokerFilter
  * 回声测试拦截器
+ *
  * @author william.liangf
+ * @link http://dubbo.io/user-guide/demos/%E5%9B%9E%E5%A3%B0%E6%B5%8B%E8%AF%95.html
  */
 @Activate(group = Constants.PROVIDER, order = -110000)
 public class EchoFilter implements Filter {
 
-	public Result invoke(Invoker<?> invoker, Invocation inv) throws RpcException {
-		if(inv.getMethodName().equals(Constants.$ECHO) && inv.getArguments() != null && inv.getArguments().length == 1 )
-			return new RpcResult(inv.getArguments()[0]);
-		return invoker.invoke(inv);
-	}
+    public Result invoke(Invoker<?> invoker, Invocation inv) throws RpcException {
+        if (inv.getMethodName().equals(Constants.$ECHO) && inv.getArguments() != null && inv.getArguments().length ==
+                1) {
+            return new RpcResult(inv.getArguments()[0]);
+        }
+        return invoker.invoke(inv);
+    }
 
 }

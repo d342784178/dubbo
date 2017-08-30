@@ -27,8 +27,11 @@ import com.alibaba.dubbo.rpc.RpcStatus;
 
 /**
  * LimitInvokerFilter
- * 
+ * 并发拦截器--占用连接的请求数
+ * 超出连接数会自旋
+ *
  * @author william.liangf
+ * @link http://dubbo.io/user-guide/demos/%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6.html
  */
 @Activate(group = Constants.CONSUMER, value = Constants.ACTIVES_KEY)
 public class ActiveLimitFilter implements Filter {
@@ -44,7 +47,7 @@ public class ActiveLimitFilter implements Filter {
             long remain = timeout;
             int active = count.getActive();
             if (active >= max) {
-                synchronized (count) {
+                synchronized (count) {//紫萱
                     while ((active = count.getActive()) >= max) {
                         try {
                             count.wait(remain);
@@ -54,10 +57,10 @@ public class ActiveLimitFilter implements Filter {
                         remain = timeout - elapsed;
                         if (remain <= 0) {
                             throw new RpcException("Waiting concurrent invoke timeout in client-side for service:  "
-                                                   + invoker.getInterface().getName() + ", method: "
-                                                   + invocation.getMethodName() + ", elapsed: " + elapsed
-                                                   + ", timeout: " + timeout + ". concurrent invokes: " + active
-                                                   + ". max concurrent invoke limit: " + max);
+                                    + invoker.getInterface().getName() + ", method: "
+                                    + invocation.getMethodName() + ", elapsed: " + elapsed
+                                    + ", timeout: " + timeout + ". concurrent invokes: " + active
+                                    + ". max concurrent invoke limit: " + max);
                         }
                     }
                 }
@@ -75,10 +78,10 @@ public class ActiveLimitFilter implements Filter {
                 throw t;
             }
         } finally {
-            if(max>0){
+            if (max > 0) {
                 synchronized (count) {
                     count.notify();
-                } 
+                }
             }
         }
     }

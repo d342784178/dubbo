@@ -36,30 +36,32 @@ import com.alibaba.dubbo.rpc.service.GenericService;
 
 /**
  * StubProxyFactoryWrapper
- * 
+ * stub,local代理工厂
+ *
  * @author william.liangf
  */
 public class StubProxyFactoryWrapper implements ProxyFactory {
-    
+
     private static final Logger LOGGER = LoggerFactory.getLogger(StubProxyFactoryWrapper.class);
-    
+
     private final ProxyFactory proxyFactory;
-    
+
     private Protocol protocol;
-    
+
     public StubProxyFactoryWrapper(ProxyFactory proxyFactory) {
         this.proxyFactory = proxyFactory;
     }
-    
+
     public void setProtocol(Protocol protocol) {
         this.protocol = protocol;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public <T> T getProxy(Invoker<T> invoker) throws RpcException {
-        T proxy = proxyFactory.getProxy(invoker);
+        T proxy = proxyFactory.getProxy(invoker);//客户端proxy
         if (GenericService.class != invoker.getInterface()) {
-            String stub = invoker.getUrl().getParameter(Constants.STUB_KEY, invoker.getUrl().getParameter(Constants.LOCAL_KEY));
+            String stub = invoker.getUrl().getParameter(Constants.STUB_KEY, invoker.getUrl().getParameter(Constants
+                    .LOCAL_KEY));
             if (ConfigUtils.isNotEmpty(stub)) {
                 Class<?> serviceType = invoker.getInterface();
                 if (ConfigUtils.isDefault(stub)) {
@@ -71,41 +73,57 @@ public class StubProxyFactoryWrapper implements ProxyFactory {
                 }
                 try {
                     Class<?> stubClass = ReflectUtils.forName(stub);
-                    if (! serviceType.isAssignableFrom(stubClass)) {
-                        throw new IllegalStateException("The stub implemention class " + stubClass.getName() + " not implement interface " + serviceType.getName());
+                    if (!serviceType.isAssignableFrom(stubClass)) {
+                        throw new IllegalStateException("The stub implemention class " + stubClass.getName() + " not " +
+                                "implement interface " + serviceType.getName());
                     }
                     try {
                         Constructor<?> constructor = ReflectUtils.findConstructor(stubClass, serviceType);
-                        proxy = (T) constructor.newInstance(new Object[] {proxy});
-                        //export stub service
+                        //stub构造器注入
+                        proxy = (T) constructor.newInstance(new Object[]{proxy});
+                        //暴露客户端stub服务
                         URL url = invoker.getUrl();
-                        if (url.getParameter(Constants.STUB_EVENT_KEY, Constants.DEFAULT_STUB_EVENT)){
-                            url = url.addParameter(Constants.STUB_EVENT_METHODS_KEY, StringUtils.join(Wrapper.getWrapper(proxy.getClass()).getDeclaredMethodNames(), ","));
+                        if (url.getParameter(Constants.STUB_EVENT_KEY, Constants.DEFAULT_STUB_EVENT)) {
+                            url = url.addParameter(Constants.STUB_EVENT_METHODS_KEY, StringUtils.join(Wrapper
+                                    .getWrapper(proxy.getClass()).getDeclaredMethodNames(), ","));
                             url = url.addParameter(Constants.IS_SERVER_KEY, Boolean.FALSE.toString());
-                            try{
-                                export(proxy, (Class)invoker.getInterface(), url);
-                            }catch (Exception e) {
+                            try {
+                                export(proxy, (Class) invoker.getInterface(), url);
+                            } catch (Exception e) {
                                 LOGGER.error("export a stub service error.", e);
                             }
                         }
                     } catch (NoSuchMethodException e) {
-                        throw new IllegalStateException("No such constructor \"public " + stubClass.getSimpleName() + "(" + serviceType.getName() + ")\" in stub implemention class " + stubClass.getName(), e);
+                        throw new IllegalStateException("No such constructor \"public " + stubClass.getSimpleName() +
+                                "(" + serviceType.getName() + ")\" in stub implemention class " + stubClass.getName()
+                                , e);
                     }
                 } catch (Throwable t) {
-                    LOGGER.error("Failed to create stub implemention class " + stub + " in consumer " + NetUtils.getLocalHost() + " use dubbo version " + Version.getVersion() + ", cause: " + t.getMessage(), t);
+                    LOGGER.error("Failed to create stub implemention class " + stub + " in consumer " + NetUtils
+                            .getLocalHost() + " use dubbo version " + Version.getVersion() + ", cause: " + t
+                            .getMessage(), t);
                     // ignore
                 }
             }
         }
         return proxy;
     }
-    
+
     public <T> Invoker<T> getInvoker(T proxy, Class<T> type, URL url) throws RpcException {
         return proxyFactory.getInvoker(proxy, type, url);
     }
-    
+
+    /**
+     * 暴露stub服务
+     *
+     * @param instance
+     * @param type
+     * @param url
+     * @param <T>
+     * @return
+     */
     private <T> Exporter<T> export(T instance, Class<T> type, URL url) {
         return protocol.export(proxyFactory.getInvoker(instance, type, url));
     }
-    
+
 }

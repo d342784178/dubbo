@@ -212,7 +212,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             checkRef();
             generic = Boolean.FALSE.toString();
         }
-        //不明白?
+        //TODO 不明白?
         if (local != null) {
             if ("true".equals(local)) {
                 local = interfaceName + "Local";

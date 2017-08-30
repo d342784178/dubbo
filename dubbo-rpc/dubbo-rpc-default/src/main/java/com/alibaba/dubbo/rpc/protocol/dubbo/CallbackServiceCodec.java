@@ -69,6 +69,7 @@ class CallbackServiceCodec {
     
     /**
      * client 端export callback service
+     * 暴露回调接口
      * @param channel
      * @param clazz
      * @param inst
@@ -104,7 +105,7 @@ class CallbackServiceCodec {
         if(export){
             //同一个channel 可以有多个callback instance. 不同的instance不重新export
             if( ! channel.hasAttribute(cacheKey)){
-                if (!isInstancesOverLimit(channel, url, clazz.getName(), instid, false)) {
+                if (!isInstancesOverLimit(channel, url, clazz.getName(), instid, false)) {//消费端暴露服务
                     Invoker<?> invoker = proxyFactory.getInvoker(inst, clazz, exporturl);
                     //资源销毁？
                     Exporter<?> exporter = protocol.export(invoker);
@@ -140,7 +141,7 @@ class CallbackServiceCodec {
             if( proxy == null ){
             	URL referurl = URL.valueOf("callback://" + url.getAddress() + "/" + clazz.getName() + "?" + Constants.INTERFACE_KEY + "=" + clazz.getName());
             	referurl = referurl.addParametersIfAbsent(url.getParameters()).removeParameter(Constants.METHODS_KEY);
-            	if (!isInstancesOverLimit(channel, referurl, clazz.getName(), instid, true)){
+            	if (!isInstancesOverLimit(channel, referurl, clazz.getName(), instid, true)){//服务端引用消费端的回调服务
                     @SuppressWarnings("rawtypes")
                     Invoker<?> invoker = new ChannelWrappedInvoker(clazz, channel, referurl, String.valueOf(instid));
                     proxy = proxyFactory.getProxy(invoker);

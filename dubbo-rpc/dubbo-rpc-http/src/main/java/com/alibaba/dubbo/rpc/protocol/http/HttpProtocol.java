@@ -91,10 +91,11 @@ public class HttpProtocol extends AbstractProxyProtocol {
         String addr = url.getIp() + ":" + url.getPort();
         HttpServer server = serverMap.get(addr);
         if (server == null) {
-            //绑定urlPath(使用servlet 或者jetty 可以拓展使用内置tomcat)
+            //绑定url路径,实际为端口绑定(使用servlet 或者jetty 可以拓展使用内置tomcat)
             server = httpBinder.bind(url, new InternalHandler());
             serverMap.put(addr, server);
         }
+        //封装了http请求解析->调用具体实现 并未绑定url url绑定见DispatcherServlet
         final HttpInvokerServiceExporter httpServiceExporter = new HttpInvokerServiceExporter();
         httpServiceExporter.setServiceInterface(type);
         httpServiceExporter.setService(impl);

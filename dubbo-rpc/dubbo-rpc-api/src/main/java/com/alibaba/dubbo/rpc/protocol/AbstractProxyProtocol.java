@@ -29,7 +29,7 @@ import com.alibaba.dubbo.rpc.RpcException;
 
 /**
  * AbstractProxyProtocol
- * 
+ * 非自定协议的实现封装(http rmi等)
  * @author william.liangf
  */
 public abstract class AbstractProxyProtocol extends AbstractProtocol {

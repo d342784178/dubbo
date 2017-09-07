@@ -84,7 +84,7 @@ public class DefaultFuture implements ResponseFuture {
         return get(timeout);
     }
 
-    public Object get(int timeout) throws RemotingException {
+    public Object get(int timeout) throws RemotingException {//超时判断
         if (timeout <= 0) {
             timeout = Constants.DEFAULT_TIMEOUT;
         }

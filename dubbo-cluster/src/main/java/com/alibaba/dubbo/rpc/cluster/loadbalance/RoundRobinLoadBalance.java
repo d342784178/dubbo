@@ -63,6 +63,7 @@ public class RoundRobinLoadBalance extends AbstractLoadBalance {
     protected <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation invocation) {
         String key = invokers.get(0).getUrl().getServiceKey() + "." + invocation.getMethodName();
         int length = invokers.size(); // 总个数
+        //maxWeight,minWeight是用于判断 集群中权重是否都一样
         int maxWeight = 0; // 最大权重
         int minWeight = Integer.MAX_VALUE; // 最小权重
         final LinkedHashMap<Invoker<T>, IntegerWrapper> invokerToWeightMap = new LinkedHashMap<Invoker<T>,
@@ -82,10 +83,10 @@ public class RoundRobinLoadBalance extends AbstractLoadBalance {
             sequences.putIfAbsent(key, new AtomicPositiveInteger());
             sequence = sequences.get(key);
         }
-        int currentSequence = sequence.getAndIncrement();
-        if (maxWeight > 0 && minWeight < maxWeight) { // 权重不一样
-            int mod = currentSequence % weightSum;
-            for (int i = 0; i < maxWeight; i++) {
+        int currentSequence = sequence.getAndIncrement();//当前集群调用次数+1
+        if (maxWeight > 0 && minWeight < maxWeight) { // 权重不一样 就会出现minWeight < maxWeight 进入以下条件
+            int mod = currentSequence % weightSum;//对总weight取余
+            for (int i = 0; i < maxWeight; i++) {//得到所在的invoker
                 for (Map.Entry<Invoker<T>, IntegerWrapper> each : invokerToWeightMap.entrySet()) {
                     final Invoker<T> k = each.getKey();
                     final IntegerWrapper v = each.getValue();

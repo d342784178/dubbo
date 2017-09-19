@@ -39,20 +39,27 @@ public final class DubboCountCodec implements Codec2 {
         codec.encode(channel, buffer, msg);
     }
 
+    /**
+     * 半包 粘包解析
+     * @param channel
+     * @param buffer
+     * @return
+     * @throws IOException
+     */
     public Object decode(Channel channel, ChannelBuffer buffer) throws IOException {
         int save = buffer.readerIndex();
         MultiMessage result = MultiMessage.create();
         do {
             Object obj = codec.decode(channel, buffer);
-            if (Codec2.DecodeResult.NEED_MORE_INPUT == obj) {
+            if (Codec2.DecodeResult.NEED_MORE_INPUT == obj) {//半包
                 buffer.readerIndex(save);
                 break;
-            } else {
+            } else {//不为半包 添加结果
                 result.addMessage(obj);
                 logMessageLength(obj, buffer.readerIndex() - save);
                 save = buffer.readerIndex();
             }
-        } while (true);
+        } while (true);//循环读直到发生半包break
         if (result.isEmpty()) {
             return Codec2.DecodeResult.NEED_MORE_INPUT;
         }

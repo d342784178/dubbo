@@ -87,7 +87,7 @@ final class NettyCodecAdapter {
     }
 
     private class InternalDecoder extends SimpleChannelUpstreamHandler {
-
+        //包办粘包的缓存
         private com.alibaba.dubbo.remoting.buffer.ChannelBuffer buffer =
             com.alibaba.dubbo.remoting.buffer.ChannelBuffers.EMPTY_BUFFER;
 
@@ -106,7 +106,7 @@ final class NettyCodecAdapter {
             }
 
             com.alibaba.dubbo.remoting.buffer.ChannelBuffer message;
-            if (buffer.readable()) {
+            if (buffer.readable()) {//如果缓存有数据 则追加数据 作为message局部变量
                 if (buffer instanceof DynamicChannelBuffer) {
                     buffer.writeBytes(input.toByteBuffer());
                     message = buffer;
@@ -117,7 +117,7 @@ final class NettyCodecAdapter {
                     message.writeBytes(buffer, buffer.readableBytes());
                     message.writeBytes(input.toByteBuffer());
                 }
-            } else {
+            } else {//否则直接申请新的空间 作为message局部变量
                 message = com.alibaba.dubbo.remoting.buffer.ChannelBuffers.wrappedBuffer(
                     input.toByteBuffer());
             }
@@ -144,15 +144,15 @@ final class NettyCodecAdapter {
                             buffer = com.alibaba.dubbo.remoting.buffer.ChannelBuffers.EMPTY_BUFFER;
                             throw new IOException("Decode without read data.");
                         }
-                        if (msg != null) {
+                        if (msg != null) {//解析到完成请求 向后执行
                             Channels.fireMessageReceived(ctx, msg, event.getRemoteAddress());
                         }
                     }
-                } while (message.readable());
+                } while (message.readable());//循环读
             } finally {
-                if (message.readable()) {
-                    message.discardReadBytes();
-                    buffer = message;
+                if (message.readable()) {//如果message粘包
+                    message.discardReadBytes();//移除已经读取过的部分
+                    buffer = message;//存到buffer缓存中
                 } else {
                     buffer = com.alibaba.dubbo.remoting.buffer.ChannelBuffers.EMPTY_BUFFER;
                 }

@@ -105,15 +105,16 @@ public class ExchangeCodec extends TelnetCodec {
             }
             return super.decode(channel, buffer, readable, header);
         }
+        //如果报文长度小于HEADER_LENGTH 说明协议头都不全 继续读报文
         // check length.
         if (readable < HEADER_LENGTH) {
             return DecodeResult.NEED_MORE_INPUT;
         }
-
+        //获取data长度
         // get data length.
         int len = Bytes.bytes2int(header, 12);
         checkPayload(channel, len);
-
+        //如果报文长度< HEADER_LENGTH+len 说明报文不完整 继续读报文
         int tt = len + HEADER_LENGTH;
         if( readable < tt ) {
             return DecodeResult.NEED_MORE_INPUT;
@@ -138,6 +139,14 @@ public class ExchangeCodec extends TelnetCodec {
         }
     }
 
+    /**
+     * 解析消息体
+     * @param channel
+     * @param is
+     * @param header
+     * @return
+     * @throws IOException
+     */
     protected Object decodeBody(Channel channel, InputStream is, byte[] header) throws IOException {
         byte flag = header[2], proto = (byte) (flag & SERIALIZATION_MASK);
         Serialization s = CodecSupport.getSerialization(channel.getUrl(), proto);

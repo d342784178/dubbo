@@ -238,6 +238,7 @@ class CallbackServiceCodec {
     
     public static Object encodeInvocationArgument(Channel channel, RpcInvocation inv, int paraIndex) throws IOException{
         //encode时可直接获取url
+        //如果有callback参数 则在客户端开启端口监听
         URL url = inv.getInvoker() == null ? null : inv.getInvoker().getUrl();
         byte callbackstatus = isCallBack(url, inv.getMethodName(), paraIndex);
         Object[] args = inv.getArguments();

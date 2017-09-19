@@ -24,7 +24,7 @@ import com.alibaba.dubbo.common.extension.SPI;
 
 /**
  * Transporter. (SPI, Singleton, ThreadSafe)
- * 抽象网络传输
+ * 抽象网络连接
  * 底层调用netty mina等框架实现网络通信
  * <p>
  * <a href="http://en.wikipedia.org/wiki/Transport_Layer">Transport Layer</a>

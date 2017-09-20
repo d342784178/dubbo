@@ -87,7 +87,7 @@ final class NettyCodecAdapter {
     }
 
     private class InternalDecoder extends SimpleChannelUpstreamHandler {
-        //包办粘包的缓存
+        //半办粘包的缓存
         private com.alibaba.dubbo.remoting.buffer.ChannelBuffer buffer =
             com.alibaba.dubbo.remoting.buffer.ChannelBuffers.EMPTY_BUFFER;
 
@@ -140,7 +140,7 @@ final class NettyCodecAdapter {
                         message.readerIndex(saveReaderIndex);
                         break;
                     } else {
-                        if (saveReaderIndex == message.readerIndex()) {
+                        if (saveReaderIndex == message.readerIndex()) {//没有可读数据
                             buffer = com.alibaba.dubbo.remoting.buffer.ChannelBuffers.EMPTY_BUFFER;
                             throw new IOException("Decode without read data.");
                         }

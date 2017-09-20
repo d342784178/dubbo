@@ -92,7 +92,7 @@ public class DefaultFuture implements ResponseFuture {
             long start = System.currentTimeMillis();
             lock.lock();
             try {
-                while (! isDone()) {
+                while (! isDone()) {//循环 判断是否执行完毕
                     done.await(timeout, TimeUnit.MILLISECONDS);
                     if (isDone() || System.currentTimeMillis() - start > timeout) {
                         break;

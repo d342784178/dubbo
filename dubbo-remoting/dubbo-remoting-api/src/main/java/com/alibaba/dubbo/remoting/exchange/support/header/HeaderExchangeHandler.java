@@ -36,6 +36,7 @@ import com.alibaba.dubbo.remoting.transport.ChannelHandlerDelegate;
 
 /**
  * ExchangeReceiver
+ * 协议头处理
  * 
  * @author william.liangf
  * @author chao.liuc
@@ -166,10 +167,10 @@ public class HeaderExchangeHandler implements ChannelHandlerDelegate {
                 if (request.isEvent()) {
                     handlerEvent(channel, request);
                 } else {
-                    if (request.isTwoWay()) {
+                    if (request.isTwoWay()) {//请求有返回值
                         Response response = handleRequest(exchangeChannel, request);
                         channel.send(response);
-                    } else {
+                    } else {//没有返回值 com.alibaba.dubbo.rpc.protocol.dubbo.DubboProtocol.requestHandler
                         handler.received(exchangeChannel, request.getData());
                     }
                 }

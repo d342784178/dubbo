@@ -25,7 +25,8 @@ import com.alibaba.dubbo.rpc.cluster.directory.StaticDirectory;
 import com.alibaba.dubbo.rpc.cluster.support.AbstractClusterInvoker;
 import com.alibaba.dubbo.rpc.support.MockProtocol;
 
-public class MockClusterInvokerTest {
+public class
+MockClusterInvokerTest {
 	
 	List<Invoker<IHelloService>> invokers = new ArrayList<Invoker<IHelloService>>();
 	

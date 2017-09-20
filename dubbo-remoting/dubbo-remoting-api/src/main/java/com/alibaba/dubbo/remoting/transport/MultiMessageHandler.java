@@ -7,6 +7,7 @@ import com.alibaba.dubbo.remoting.RemotingException;
 import com.alibaba.dubbo.remoting.exchange.support.MultiMessage;
 
 /**
+ * 可能一次接受到多个request
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
  * @see MultiMessage
  */

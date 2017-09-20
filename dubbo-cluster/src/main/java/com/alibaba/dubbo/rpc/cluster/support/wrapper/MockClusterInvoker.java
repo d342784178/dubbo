@@ -32,7 +32,7 @@ import com.alibaba.dubbo.rpc.cluster.Directory;
 import com.alibaba.dubbo.rpc.support.MockInvoker;
 
 /**
- * 用于本地mock
+ * mock  服务降级
  *
  * @author chao.liuc
  */
@@ -73,7 +73,7 @@ public class MockClusterInvoker<T> implements Invoker<T> {
         if (value.length() == 0 || value.equalsIgnoreCase("false")) {
             //no mock
             result = this.invoker.invoke(invocation);
-        } else if (value.startsWith("force")) {
+        } else if (value.startsWith("force")) {//强制本地返回null 不调用服务端
             if (logger.isWarnEnabled()) {
                 logger.info("force-mock: " + invocation.getMethodName() + " force-mock enabled , url : " + directory
                         .getUrl());
@@ -83,7 +83,7 @@ public class MockClusterInvoker<T> implements Invoker<T> {
         } else {
             //fail-mock
             try {
-                result = this.invoker.invoke(invocation);
+                result = this.invoker.invoke(invocation);//服务端调用失败 返回null
             } catch (RpcException e) {
                 if (e.isBiz()) {
                     throw e;

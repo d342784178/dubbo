@@ -344,14 +344,13 @@ public class RegistryProtocol implements Protocol {
         			logger.warn("Subsribe category=configurator, but notifed non-configurator urls. may be registry bug. unexcepted url: " + url);
         		}
         	}
-        	//剩下的都是匹配的
         	if (result != null) {
         		urls = result;
         	}
-        	//新的消费者
+        	//将改变的urls转化为Configurator
         	this.configurators = RegistryDirectory.toConfigurators(urls);
             List<ExporterChangeableWrapper<?>> exporters = new ArrayList<ExporterChangeableWrapper<?>>(bounds.values());
-            for (ExporterChangeableWrapper<?> exporter : exporters){
+            for (ExporterChangeableWrapper<?> exporter : exporters){//注册中心配置被覆盖 重新export
                 Invoker<?> invoker = exporter.getOriginInvoker();
                 final Invoker<?> originInvoker ;
                 if (invoker instanceof InvokerDelegete){

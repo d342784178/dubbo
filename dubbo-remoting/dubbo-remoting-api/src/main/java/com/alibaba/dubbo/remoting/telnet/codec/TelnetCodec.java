@@ -34,7 +34,9 @@ import com.alibaba.dubbo.remoting.transport.codec.TransportCodec;
 
 /**
  * TelnetCodec
- * 
+ * 命令行解码器
+ *
+ * @link http://www.cnblogs.com/feiqihang/p/4387330.html
  * @author heyman
  * @author william.liangf
  * @author chao.liuc
@@ -83,7 +85,8 @@ public class TelnetCodec extends TransportCodec {
         if (message == null || message.length == 0) {
             return DecodeResult.NEED_MORE_INPUT;
         }
-        
+
+
         if (message[message.length - 1] == '\b') { // Windows backspace echo
             try {
                 boolean doublechar = message.length >= 3 && message[message.length - 3] < 0; // double byte char

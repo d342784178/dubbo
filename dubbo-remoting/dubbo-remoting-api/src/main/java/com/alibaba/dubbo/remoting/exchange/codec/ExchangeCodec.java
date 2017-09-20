@@ -88,9 +88,9 @@ public class ExchangeCodec extends TelnetCodec {
     }
     
     protected Object decode(Channel channel, ChannelBuffer buffer, int readable, byte[] header) throws IOException {
-        // check magic number.
+        // 检查魔数
         if (readable > 0 && header[0] != MAGIC_HIGH 
-                || readable > 1 && header[1] != MAGIC_LOW) {
+                || readable > 1 && header[1] != MAGIC_LOW) {//魔术不对 则为telnet命令
             int length = header.length;
             if (header.length < readable) {
                 header = Bytes.copyOf(header, readable);

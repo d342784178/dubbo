@@ -51,7 +51,7 @@ public final class DubboCountCodec implements Codec2 {
         MultiMessage result = MultiMessage.create();
         do {
             Object obj = codec.decode(channel, buffer);
-            if (Codec2.DecodeResult.NEED_MORE_INPUT == obj) {//半包
+            if (Codec2.DecodeResult.NEED_MORE_INPUT == obj) {//半包或没有可读数据了
                 buffer.readerIndex(save);
                 break;
             } else {//不为半包 添加结果
@@ -59,7 +59,7 @@ public final class DubboCountCodec implements Codec2 {
                 logMessageLength(obj, buffer.readerIndex() - save);
                 save = buffer.readerIndex();
             }
-        } while (true);//循环读直到发生半包break
+        } while (true);//循环读直到发生半包或没有数据break
         if (result.isEmpty()) {
             return Codec2.DecodeResult.NEED_MORE_INPUT;
         }

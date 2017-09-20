@@ -22,6 +22,8 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
 /**
+ * 就是netty的ChannelBuffer
+ *
  * A random and sequential accessible sequence of zero or more bytes (octets).
  * This interface provides an abstract view for one or more primitive byte
  * arrays ({@code byte[]}) and {@linkplain ByteBuffer NIO buffers}.
